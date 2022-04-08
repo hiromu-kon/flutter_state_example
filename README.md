@@ -3,6 +3,9 @@
 ## StatefulWidget
 [StatefulWidget サンプル](https://github.com/hiromu-kon/flutter_state_example/pull/3)
 
+## BLoC
+[BLoC サンプル](https://github.com/hiromu-kon/flutter_state_example/pull/4)
+
 ## Provider
 [Provider サンプル](https://github.com/hiromu-kon/flutter_state_example/pull/1)
 
