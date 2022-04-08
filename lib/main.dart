@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,39 +15,117 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late MyHomePageLogic myHomePageLogic;
+
+  @override
+  void initState() {
+    super.initState();
+    myHomePageLogic = MyHomePageLogic();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print('MyHomePageStateをビルド');
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Demo Home Page'),
+        title: Text(widget.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '0',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+          children: [
+            const WidgetA(),
+            WidgetB(myHomePageLogic),
+            WidgetC(myHomePageLogic),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+    );
+  }
+}
+
+class MyHomePageLogic {
+  MyHomePageLogic() {
+    _counterController.sink.add(_counter);
+  }
+
+  final StreamController<int> _counterController = StreamController();
+  int _counter = 0;
+
+  Stream<int> get count => _counterController.stream;
+
+  void increment() {
+    _counter++;
+    _counterController.sink.add(_counter);
+  }
+
+  void dispose() {
+    _counterController.close();
+  }
+}
+
+class WidgetA extends StatelessWidget {
+  const WidgetA({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    print('WidgetAをビルド');
+
+    return const Text(
+      'You have pushed the button this many times:',
+    );
+  }
+}
+
+class WidgetB extends StatelessWidget {
+  const WidgetB(this.myHomePageLogic, {Key? key}) : super(key: key);
+
+  final MyHomePageLogic myHomePageLogic;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<int>(
+      stream: myHomePageLogic.count,
+      builder: (context, snapshot) {
+        print('WidgetBをビルド');
+
+        return Text(
+          '${snapshot.data}',
+          style: Theme.of(context).textTheme.headline4,
+        );
+      },
+    );
+  }
+}
+
+class WidgetC extends StatelessWidget {
+  const WidgetC(this.myHomePageLogic, {Key? key}) : super(key: key);
+
+  final MyHomePageLogic myHomePageLogic;
+
+  @override
+  Widget build(BuildContext context) {
+    print('WidgetCをビルド');
+
+    return ElevatedButton(
+      onPressed: () {
+        myHomePageLogic.increment();
+      },
+      child: const Text('カウント'),
     );
   }
 }
